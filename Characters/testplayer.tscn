@@ -1,0 +1,36 @@
+[gd_scene load_steps=5 format=3 uid="uid://j5bbvw08b7hk"]
+
+[ext_resource type="Script" uid="uid://qv1fvnoc6u76" path="res://Characters/testplayer.gd" id="1_dyo3l"]
+[ext_resource type="Texture2D" uid="uid://5e88kkk2x14y" path="res://icon.svg" id="1_hnreu"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_dyo3l"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath("username:text")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_eovys"]
+radius = 30.0
+
+[node name="Player" type="CharacterBody2D"]
+script = ExtResource("1_dyo3l")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_dyo3l")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+scale = Vector2(0.46875, 0.46875)
+texture = ExtResource("1_hnreu")
+
+[node name="Collision" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_eovys")
+
+[node name="username" type="Label" parent="."]
+offset_left = -90.0
+offset_top = -60.0
+offset_right = 90.0
+offset_bottom = -37.0
+text = "prime iraphahell 2016"
+horizontal_alignment = 1
