@@ -16,6 +16,10 @@ run/main_scene="uid://gccvxlhfj2lm"
 config/features=PackedStringArray("4.4", "GL Compatibility")
 config/icon="res://icon.svg"
 
+[autoload]
+
+Funcs="*res://Autoload/functions.gd"
+
 [display]
 
 window/stretch/mode="viewport"
@@ -23,6 +27,7 @@ window/stretch/mode="viewport"
 [file_customization]
 
 folder_colors={
+"res://Autoload/": "red",
 "res://Characters/": "teal",
 "res://Main Game/": "blue",
 "res://Other/": "gray",

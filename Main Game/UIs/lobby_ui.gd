@@ -85,6 +85,12 @@ func modify_leaderboard(mode_data: Array) -> void:
 	
 	if mode == 'add':
 		_instantiate_leaderboard_entry(player_name, team)
-		
 	elif mode == 'remove':
 		_remove_leaderboard_entry(player_name)
+	
+	if !multiplayer.is_server():
+		_update_labels_as_host.rpc_id(1)
+
+@rpc('any_peer')
+func _update_labels_as_host() -> void:
+	game._update_labels.rpc(game.players.size())

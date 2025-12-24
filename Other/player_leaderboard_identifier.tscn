@@ -3,15 +3,18 @@
 [ext_resource type="Script" uid="uid://xttgc0fbkxtf" path="res://Other/player_leaderboard_identifier.gd" id="1_ynhub"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_ynhub"]
-properties/0/path = NodePath("NameContainer/Name:text")
+properties/0/path = NodePath("Background/NameContainer/Name:text")
 properties/0/spawn = true
 properties/0/replication_mode = 1
-properties/1/path = NodePath("TeamContainer/Team:text")
+properties/1/path = NodePath("Background/TeamContainer/Team:text")
 properties/1/spawn = true
 properties/1/replication_mode = 1
-properties/2/path = NodePath("TeamContainer/Team:theme_override_colors/font_color")
+properties/2/path = NodePath("Background/TeamContainer/Team:theme_override_colors/font_color")
 properties/2/spawn = true
 properties/2/replication_mode = 1
+properties/3/path = NodePath("Background:color")
+properties/3/spawn = true
+properties/3/replication_mode = 1
 
 [sub_resource type="StyleBoxLine" id="StyleBoxLine_qxat8"]
 grow_begin = 0.0
@@ -22,31 +25,47 @@ vertical = true
 [node name="Player Leaderboard Identifier" type="HBoxContainer"]
 clip_children = 1
 custom_minimum_size = Vector2(300, 0)
-offset_right = 360.0
+offset_right = 420.0
 offset_bottom = 60.0
 script = ExtResource("1_ynhub")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_ynhub")
 
-[node name="NameContainer" type="CenterContainer" parent="."]
+[node name="Background" type="ColorRect" parent="."]
+custom_minimum_size = Vector2(420, 60)
+layout_mode = 2
+color = Color(0.137255, 0.137255, 0.137255, 1)
+
+[node name="NameContainer" type="CenterContainer" parent="Background"]
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
+offset_left = 4.0
+offset_right = 254.0
+offset_bottom = 60.0
 
-[node name="Name" type="Label" parent="NameContainer"]
+[node name="Name" type="Label" parent="Background/NameContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "test zici ca e zenith"
 
-[node name="VSeparator" type="VSeparator" parent="."]
+[node name="VSeparator" type="VSeparator" parent="Background"]
 layout_mode = 2
-theme_override_constants/separation = 10
+offset_left = 258.0
+offset_right = 268.0
+offset_bottom = 60.0
 theme_override_styles/separator = SubResource("StyleBoxLine_qxat8")
 
-[node name="TeamContainer" type="MarginContainer" parent="."]
+[node name="TeamContainer" type="CenterContainer" parent="Background"]
+custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
+offset_left = 272.0
+offset_right = 422.0
+offset_bottom = 60.0
 
-[node name="Team" type="Label" parent="TeamContainer"]
+[node name="Team" type="Label" parent="Background/TeamContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 36
-text = "din oceanul pacific"
+text = "Blue"

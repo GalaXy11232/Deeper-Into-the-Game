@@ -1,7 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://gccvxlhfj2lm"]
+[gd_scene load_steps=9 format=3 uid="uid://gccvxlhfj2lm"]
 
 [ext_resource type="Script" uid="uid://7w762sn16rtk" path="res://Main Game/game.gd" id="1_yqv8y"]
+[ext_resource type="Script" uid="uid://boddwe5ern7ar" path="res://Main Game/UIs/host_ui.gd" id="2_b0twb"]
 [ext_resource type="Script" uid="uid://duor6bnkodj4w" path="res://Main Game/UIs/lobby_ui.gd" id="2_vnwly"]
+[ext_resource type="Script" uid="uid://dybxwxufpt1gr" path="res://Main Game/UIs/game_ui.gd" id="4_01alp"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_fpbmt"]
 font_size = 64
@@ -10,8 +12,16 @@ outline_color = Color(0, 0, 0, 1)
 shadow_size = 16
 shadow_color = Color(0.424834, 0.00174869, 0.990689, 1)
 
+[sub_resource type="LabelSettings" id="LabelSettings_vnwly"]
+font_size = 24
+font_color = Color(1, 0, 0, 1)
+
 [sub_resource type="LabelSettings" id="LabelSettings_yqv8y"]
 font_size = 36
+
+[sub_resource type="LabelSettings" id="LabelSettings_b0twb"]
+font_size = 24
+font_color = Color(1, 1, 0, 1)
 
 [node name="Game" type="Node"]
 script = ExtResource("1_yqv8y")
@@ -19,30 +29,36 @@ script = ExtResource("1_yqv8y")
 [node name="GameZone" type="Node2D" parent="."]
 unique_name_in_owner = true
 
+[node name="Spawnpoints" type="Node2D" parent="GameZone"]
+position = Vector2(3840, 0)
+
+[node name="Red" type="Node" parent="GameZone/Spawnpoints"]
+
+[node name="sp1" type="Marker2D" parent="GameZone/Spawnpoints/Red"]
+position = Vector2(4020, 180)
+gizmo_extents = 50.0
+
+[node name="sp2" type="Marker2D" parent="GameZone/Spawnpoints/Red"]
+position = Vector2(4020, 450)
+gizmo_extents = 50.0
+
+[node name="Blue" type="Node" parent="GameZone/Spawnpoints"]
+
+[node name="sp1" type="Marker2D" parent="GameZone/Spawnpoints/Blue"]
+position = Vector2(4790, 180)
+gizmo_extents = 50.0
+
+[node name="sp2" type="Marker2D" parent="GameZone/Spawnpoints/Blue"]
+position = Vector2(4790, 450)
+gizmo_extents = 50.0
+
+[node name="Camera2D" type="Camera2D" parent="GameZone"]
+offset = Vector2(3840, 0)
+anchor_mode = 0
+
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
 _spawnable_scenes = PackedStringArray("uid://j5bbvw08b7hk")
 spawn_path = NodePath("../GameZone")
-
-[node name="HostUI" type="CanvasLayer" parent="."]
-
-[node name="Control" type="Control" parent="HostUI"]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-
-[node name="Start Game" type="Button" parent="HostUI/Control"]
-layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_top = -48.0
-offset_right = 120.0
-grow_vertical = 0
-text = "Start Game"
 
 [node name="MenuUI" type="CanvasLayer" parent="."]
 visible = false
@@ -55,7 +71,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-metadata/_edit_use_anchors_ = true
 
 [node name="Menu Title" type="Label" parent="MenuUI/Multiplayer"]
 layout_mode = 1
@@ -140,6 +155,17 @@ text = "Enter your desired username"
 horizontal_alignment = 1
 metadata/_edit_use_anchors_ = true
 
+[node name="ErrorLabel" type="Label" parent="MenuUI/Multiplayer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+offset_left = 270.0
+offset_top = 150.0
+offset_right = 390.0
+offset_bottom = 210.0
+text = "eroare de compilare exit code 11"
+label_settings = SubResource("LabelSettings_vnwly")
+
 [node name="LobbyUI" type="CanvasLayer" parent="."]
 script = ExtResource("2_vnwly")
 
@@ -207,7 +233,6 @@ anchor_bottom = 1.0
 offset_right = 300.0
 grow_vertical = 2
 mouse_filter = 2
-theme_override_constants/separation = 16
 
 [node name="Blue Alliance Container" type="VBoxContainer" parent="LobbyUI/Alliances Listing"]
 unique_name_in_owner = true
@@ -220,9 +245,67 @@ offset_left = -312.0
 grow_horizontal = 0
 grow_vertical = 2
 mouse_filter = 2
-theme_override_constants/separation = 16
+
+[node name="HostUI" type="CanvasLayer" parent="."]
+visible = false
+script = ExtResource("2_b0twb")
+
+[node name="Control" type="Control" parent="HostUI"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Start Game" type="Button" parent="HostUI/Control"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -48.0
+offset_right = 120.0
+grow_vertical = 0
+text = "Start Game"
+
+[node name="Label" type="Label" parent="HostUI/Control"]
+layout_mode = 0
+offset_top = 540.0
+offset_right = 167.0
+offset_bottom = 600.0
+text = "You re hosting"
+label_settings = SubResource("LabelSettings_b0twb")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="GameUI" type="CanvasLayer" parent="."]
+visible = false
+script = ExtResource("4_01alp")
+
+[node name="TimerLabel" type="Label" parent="GameUI"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 30.0
+offset_bottom = 85.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 40
+text = "Starting in 3"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="GameTimer" type="Timer" parent="GameUI"]
+
+[node name="Label" type="Label" parent="."]
+offset_left = 3840.0
+offset_right = 4080.0
+offset_bottom = 150.0
+text = "asadfghjghgsefadwsfgh"
+horizontal_alignment = 1
 
 [connection signal="pressed" from="MenuUI/Multiplayer/Host" to="." method="_on_host_pressed"]
 [connection signal="pressed" from="MenuUI/Multiplayer/Join" to="." method="_on_join_pressed"]
 [connection signal="toggled" from="LobbyUI/Control/RedTeam" to="LobbyUI" method="_on_red_team_toggled"]
 [connection signal="toggled" from="LobbyUI/Control/BlueTeam" to="LobbyUI" method="_on_blue_team_toggled"]
+[connection signal="pressed" from="HostUI/Control/Start Game" to="HostUI" method="_on_start_game_pressed"]
+[connection signal="timeout" from="GameUI/GameTimer" to="GameUI" method="_on_game_timer_timeout"]

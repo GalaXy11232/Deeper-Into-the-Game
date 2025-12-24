@@ -6,9 +6,10 @@ extends Node
 @onready var menu_ui: CanvasLayer = $MenuUI
 @onready var host_ui: CanvasLayer = $HostUI
 @onready var lobby_ui: CanvasLayer = $LobbyUI
+@onready var game_ui: CanvasLayer = $GameUI
 
 const SERVER_PORT: int = 14689
-const MAX_PLAYERS: int = 4
+const MAX_PLAYERS: int = 2#4
 
 const TESTPLAYER_PATH = preload("res://Characters/testplayer.tscn")
 
@@ -16,22 +17,24 @@ var peer = ENetMultiplayerPeer.new()
 var players: Array[Dictionary] = [] ## Players will be stored as dicts containing their data
 
 func _ready() -> void:
+	$GameZone/Camera2D.offset = Vector2.ZERO
 	game_zone.hide()
 	menu_ui.show()
 	host_ui.hide()
 	lobby_ui.hide()
+	game_ui.hide()
 	
 	peer = ENetMultiplayerPeer.new()
 	multiplayer_spawner.spawn_function = add_player
 	
-	multiplayer.peer_connected.connect(_peer_connected)
+	#multiplayer.peer_connected.connect(_peer_connected) # related to leaderboards, this function caused problems
 	multiplayer.peer_disconnected.connect(_peer_disconnected)
 
 
 func _on_host_pressed() -> void:
 	## Also check if host's name is valid
-	var host_name = %"Username Entry".text
-	if len(host_name.strip_edges()) == 67:
+	var host_name = %"Username Entry".text.strip_edges()
+	if len(host_name) == 0:
 		rpc_id(1, '_join_request_failed', 'You must enter a valid name!')
 		return
 	
@@ -51,42 +54,51 @@ func _on_host_pressed() -> void:
 		'player_name': host_name
 	})
 	
-	$LobbyUI/Control/Players.text = "Players: %d \nWaiting for more..." % players.size()
+	$LobbyUI/Control/Players.text = "Players: %d \nWaiting for players..." % players.size()
 	
 	game_zone.show()
 	menu_ui.hide()
 	lobby_ui.show()
 	host_ui.show() # Also show hostUI only for the server host
 
-#func _input(event: InputEvent) -> void:
-	#if event is InputEventKey and event.pressed and event.keycode == KEY_Q:
-		#print(players)
-		#print(len(players))
-		#print()
 
 func _on_join_pressed() -> void:
+	var client_name = %"Username Entry".text
+	client_name = client_name.strip_edges() # Remove unnecessary spaces
+	
+	## All checks passed, client can be created
 	peer = ENetMultiplayerPeer.new()
 	peer.create_client(%"Host Server IP".text, SERVER_PORT)
 	
 	multiplayer.multiplayer_peer = peer
 	await multiplayer.connected_to_server
 	
-	var client_name = %"Username Entry".text 
+	#print(multiplayer.multiplayer_peer, ' ', multiplayer.has_multiplayer_peer())
+	
 	rpc_id(1, 'handle_join_request', client_name)
+
 
 @rpc('any_peer', 'call_local')
 func handle_join_request(player_name) -> void:
 	if !is_multiplayer_authority(): return
 	var pid := multiplayer.get_remote_sender_id()
-
+	
 	## Check if name is valid
-	if len(player_name.strip_edges()) == -67:
-		_join_request_failed.rpc_id(pid, 'You must enter a valid name!')
+	if len(player_name) == 0:
+		_join_request_failed.rpc('You must enter a valid name!')
+		multiplayer.peer_disconnected.emit(pid)
+		return
+	
+	## Check if name already exists
+	if not is_name_available(player_name):
+		_join_request_failed.rpc('Name already exists!')
+		multiplayer.peer_disconnected.emit(pid)
 		return
 	
 	## Check if max players
 	if players.size() == MAX_PLAYERS:
-		_join_request_failed.rpc_id(pid, 'Maximum number of players reached!')
+		_join_request_failed.rpc('Maximum number of players reached!')
+		multiplayer.peer_disconnected.emit(pid)
 		return
 	
 	multiplayer_spawner.spawn({
@@ -102,16 +114,19 @@ func handle_join_request(player_name) -> void:
 	
 	_update_labels.rpc(players.size())
 	_join_request_successful.rpc_id(pid)
-	#lobby_ui.add_to_leaderboard.rpc(player_name)
+	
+	_peer_connected(pid)
 
 @rpc('call_local')
 func _update_labels(players_size) -> void:
+	var alliance_members: int = len(%"Red Alliance Container".get_children() + %"Blue Alliance Container".get_children())
 	$LobbyUI/Control/Players.text = "Players: %d" % players_size
-	$LobbyUI/Control/Players.text += "\nWaiting for more..." if players_size != MAX_PLAYERS else "\nReady to start!"
+	$LobbyUI/Control/Players.text += "\nWaiting for players..." if alliance_members != MAX_PLAYERS else "\nReady to start!"
 
 @rpc('call_local')
 func _join_request_failed(message) -> void:
-	print(message)
+	%ErrorLabel.text = str(message)
+	%ErrorLabel.show()
 
 @rpc('call_local')
 func _join_request_successful() -> void:
@@ -119,16 +134,16 @@ func _join_request_successful() -> void:
 	lobby_ui.show()
 	game_zone.show()
 
-
 func _peer_connected(pid: int) -> void:
 	if !multiplayer.is_server(): return
 	
 	## Sync leaderboards
 	var nodes_to_sync: Dictionary = {}
 	for child in (%"Red Alliance Container".get_children() + %"Blue Alliance Container".get_children()):
-		nodes_to_sync[child.get_node("NameContainer/Name").text] = child.get_node("TeamContainer/Team").text
+		nodes_to_sync[child.get_node("%Name").text] = child.get_node("%Team").text
 	
-	rpc_id(pid, 'sync_leaderboards', nodes_to_sync)
+	#rpc_id(pid, 'sync_leaderboards', nodes_to_sync)
+	sync_leaderboards.rpc_id(pid, nodes_to_sync)
 
 @rpc('call_local')
 func sync_leaderboards(data, mode = 'add'):
@@ -157,13 +172,21 @@ func _peer_disconnected(pid: int) -> void:
 		_update_labels.rpc(players.size()) # Also update labels after leaving
 		rpc('sync_leaderboards', player_identifier, 'remove')
 
+
+func is_name_available(player_name: String) -> bool:
+	for child in game_zone.get_children():
+		if child is CharacterBody2D and child.get_node('username').text == player_name.strip_edges():
+			return false
+	return true 
+
+
 func add_player(data: Dictionary):
 	var player = TESTPLAYER_PATH.instantiate()
 	var pid = data.get('pid')
 	var player_name = data.get('player_name')
 	
 	player.name = str(pid)
-	player.get_node('username').text = player_name
+	player.get_node('username').text = player_name.strip_edges()
 	
 	player.global_position = Vector2(randi_range(100, 900), randi_range(100, 700))
 	
