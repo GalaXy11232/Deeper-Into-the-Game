@@ -16,10 +16,10 @@ extends CanvasLayer
 
 func _on_start_game_pressed() -> void:
 	if len(red_alliance_container.get_children() + blue_alliance_container.get_children()) == game.MAX_PLAYERS:
-		_move_camera_to_arena.rpc()
+		_move_all_to_arena.rpc()
 	
 @rpc('call_local')
-func _move_camera_to_arena() -> void:
+func _move_all_to_arena() -> void:
 	$"Control/Start Game".hide() # Hide button
 	
 	menu_ui.hide()
@@ -38,6 +38,7 @@ func _move_camera_to_arena() -> void:
 		for entry in red_alliance_container.get_children():
 			if entry is PlayerLeaderboardIdentifier and entry.get_node('%Name').text == player_name:
 				player.global_position = red_spawns.get_child(index).global_position
+				player.set_meta('team', 'red')
 				break
 			index += 1
 	
@@ -46,13 +47,16 @@ func _move_camera_to_arena() -> void:
 		for entry in blue_alliance_container.get_children():
 			if entry is PlayerLeaderboardIdentifier and entry.get_node('%Name').text == player_name:
 				player.global_position = blue_spawns.get_child(index).global_position
+				player.set_meta('team', 'blue')
 				break
 			index += 1
 	
+	print(pid, ' ', player.get_meta('team'))
 	game_ui.show()
-
+	
 	if !multiplayer.is_server():
 		_request_host_to_start_game.rpc_id(1)
 	
 @rpc('any_peer')
-func _request_host_to_start_game(): game_ui._initiate_game_start.rpc()
+func _request_host_to_start_game(): 
+	game_ui._initiate_game_start.rpc()

@@ -111,17 +111,17 @@ func handle_join_request(player_name) -> void:
 		'player_name': player_name
 	})
 	
+	if !multiplayer.is_server(): lobby_ui._update_labels_as_host.rpc_id(1)
+	else: lobby_ui._update_labels_as_host()
 	
-	_update_labels.rpc(players.size())
 	_join_request_successful.rpc_id(pid)
-	
 	_peer_connected(pid)
 
 @rpc('call_local')
 func _update_labels(players_size) -> void:
-	var alliance_members: int = len(%"Red Alliance Container".get_children() + %"Blue Alliance Container".get_children())
+	#var alliance_members: int = len(%"Red Alliance Container".get_children() + %"Blue Alliance Container".get_children())
 	$LobbyUI/Control/Players.text = "Players: %d" % players_size
-	$LobbyUI/Control/Players.text += "\nWaiting for players..." if alliance_members != MAX_PLAYERS else "\nReady to start!"
+	$LobbyUI/Control/Players.text += "\nWaiting for players..." if players_size != MAX_PLAYERS else "\nReady to start!"
 
 @rpc('call_local')
 func _join_request_failed(message) -> void:
@@ -157,7 +157,7 @@ func sync_leaderboards(data, mode = 'add'):
 
 
 func _peer_disconnected(pid: int) -> void:
-	if !is_multiplayer_authority(): return
+	if multiplayer.multiplayer_peer and !is_multiplayer_authority(): return
 	
 	var player = game_zone.get_node_or_null(str(pid))
 	if player:
@@ -168,9 +168,15 @@ func _peer_disconnected(pid: int) -> void:
 		
 		players.erase(player_identifier)
 		player.queue_free()
-	
-		_update_labels.rpc(players.size()) # Also update labels after leaving
-		rpc('sync_leaderboards', player_identifier, 'remove')
+		
+		if !multiplayer.is_server(): lobby_ui._update_labels_as_host.rpc_id(1)
+		else: lobby_ui._update_labels_as_host()
+		
+		#_update_labels.rpc(players.size()) # Also update labels after leaving
+		sync_leaderboards.rpc(player_identifier, 'remove')
+		
+		if !multiplayer.is_server(): lobby_ui._update_labels_as_host.rpc_id(1)
+		else: lobby_ui._update_labels_as_host()
 
 
 func is_name_available(player_name: String) -> bool:
