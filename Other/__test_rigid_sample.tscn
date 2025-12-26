@@ -1,0 +1,34 @@
+[gd_scene load_steps=5 format=3 uid="uid://bl3jymfs11yc6"]
+
+[ext_resource type="Script" uid="uid://cndkrmwd6yj25" path="res://Other/__test_rigid_sample.gd" id="1_ebchu"]
+[ext_resource type="Texture2D" uid="uid://5e88kkk2x14y" path="res://icon.svg" id="2_tc84m"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hjc6n"]
+radius = 14.0
+height = 60.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_2irhh"]
+radius = 17.0
+height = 66.0
+
+[node name="Rigid Sample" type="RigidBody2D"]
+mass = 0.5
+linear_damp = 10.0
+script = ExtResource("1_ebchu")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+position = Vector2(0, -9.53674e-07)
+scale = Vector2(0.46875, 0.234375)
+texture = ExtResource("2_tc84m")
+
+[node name="Collision" type="CollisionShape2D" parent="."]
+rotation = 1.57079
+shape = SubResource("CapsuleShape2D_hjc6n")
+
+[node name="HitBox" type="Area2D" parent="."]
+
+[node name="Collision" type="CollisionShape2D" parent="HitBox"]
+rotation = 1.57079
+shape = SubResource("CapsuleShape2D_2irhh")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

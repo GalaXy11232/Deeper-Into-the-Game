@@ -38,7 +38,8 @@ func _move_all_to_arena() -> void:
 		for entry in red_alliance_container.get_children():
 			if entry is PlayerLeaderboardIdentifier and entry.get_node('%Name').text == player_name:
 				player.global_position = red_spawns.get_child(index).global_position
-				player.set_meta('team', 'red')
+				#player.set_meta('team', 'red')
+				player.team = 'red'
 				break
 			index += 1
 	
@@ -47,11 +48,11 @@ func _move_all_to_arena() -> void:
 		for entry in blue_alliance_container.get_children():
 			if entry is PlayerLeaderboardIdentifier and entry.get_node('%Name').text == player_name:
 				player.global_position = blue_spawns.get_child(index).global_position
-				player.set_meta('team', 'blue')
+				#player.set_meta('team', 'blue')
+				player.team = 'blue'
 				break
 			index += 1
 	
-	print(pid, ' ', player.get_meta('team'))
 	game_ui.show()
 	
 	if !multiplayer.is_server():

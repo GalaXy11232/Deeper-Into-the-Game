@@ -15,7 +15,7 @@ extends CanvasLayer
 var red_score: int = 0
 var blue_score: int = 0
 
-const MATCH_DURATION := 5#120 # seconds
+const MATCH_DURATION := 120 # seconds
 const PREGAME_TIME := 1 # seconds
 
 # ['starting', 'running', 'ended']
@@ -101,14 +101,31 @@ func modify_team_score(team: String, value: int) -> void:
 
 
 ### ==================== GAME ELEMENTS INTERACTIONS ==================== ###
-func _on_red_body_entered(body: Node2D) -> void:
-	var team = body.get_meta('team', '').to_lower()
-	
-	if team == 'red':
-		modify_team_score.rpc(team, 10)
+#func _on_red_body_entered(body: Node2D) -> void:
+	#var team = body.get_meta('team', '').to_lower()
+	#
+	#if team == 'red':
+		#modify_team_score.rpc(team, 10)
+#
+#func _on_blue_body_entered(body: Node2D) -> void:
+	#var team = body.get_meta('team', '').to_lower()
+	#
+	#if team == 'blue':
+		#modify_team_score.rpc(team, 10)
 
-func _on_blue_body_entered(body: Node2D) -> void:
-	var team = body.get_meta('team', '').to_lower()
-	
-	if team == 'blue':
-		modify_team_score.rpc(team, 10)
+
+#func _on_red_area_entered(area: Area2D) -> void:
+	#if area is not Sample: return
+	#
+	#var holder_team = area.get_meta('team').to_lower()
+	#if holder_team == 'red':
+		#modify_team_score.rpc(holder_team, 10)
+		#area._remove_self.rpc()
+#
+#func _on_blue_area_entered(area: Area2D) -> void:
+	#if area is not Sample: return
+	#
+	#var holder_team = area.get_meta('team').to_lower()
+	#if holder_team == 'blue':
+		#modify_team_score.rpc(holder_team, 10)
+		#area._remove_self.rpc()

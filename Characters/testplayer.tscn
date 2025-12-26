@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://j5bbvw08b7hk"]
+[gd_scene load_steps=6 format=3 uid="uid://j5bbvw08b7hk"]
 
 [ext_resource type="Script" uid="uid://qv1fvnoc6u76" path="res://Characters/testplayer.gd" id="1_dyo3l"]
 [ext_resource type="Texture2D" uid="uid://5e88kkk2x14y" path="res://icon.svg" id="1_hnreu"]
+[ext_resource type="PackedScene" uid="uid://bd88npwa4e5s2" path="res://Component Nodes/inventory_node.tscn" id="2_ufksp"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_dyo3l"]
 properties/0/path = NodePath(".:position")
@@ -16,6 +17,9 @@ radius = 30.0
 
 [node name="Player" type="CharacterBody2D"]
 script = ExtResource("1_dyo3l")
+
+[node name="InventoryNode" parent="." node_paths=PackedStringArray("player") instance=ExtResource("2_ufksp")]
+player = NodePath("..")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_dyo3l")

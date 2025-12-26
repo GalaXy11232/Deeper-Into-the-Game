@@ -1,12 +1,16 @@
-[gd_scene load_steps=10 format=3 uid="uid://gccvxlhfj2lm"]
+[gd_scene load_steps=12 format=3 uid="uid://gccvxlhfj2lm"]
 
 [ext_resource type="Script" uid="uid://7w762sn16rtk" path="res://Main Game/game.gd" id="1_yqv8y"]
 [ext_resource type="Script" uid="uid://boddwe5ern7ar" path="res://Main Game/UIs/host_ui.gd" id="2_b0twb"]
+[ext_resource type="PackedScene" uid="uid://gcbys6y64aq0" path="res://Other/sample.tscn" id="2_r3o0q"]
 [ext_resource type="Script" uid="uid://duor6bnkodj4w" path="res://Main Game/UIs/lobby_ui.gd" id="2_vnwly"]
 [ext_resource type="Script" uid="uid://dybxwxufpt1gr" path="res://Main Game/UIs/game_ui.gd" id="4_01alp"]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_r3o0q"]
+size = Vector2(1170, 30)
+
 [sub_resource type="CircleShape2D" id="CircleShape2D_01alp"]
-radius = 60.0
+radius = 120.0
 
 [sub_resource type="LabelSettings" id="LabelSettings_fpbmt"]
 font_size = 64
@@ -31,6 +35,39 @@ script = ExtResource("1_yqv8y")
 
 [node name="GameZone" type="Node2D" parent="."]
 unique_name_in_owner = true
+
+[node name="OffScreen Walls" type="Node2D" parent="GameZone"]
+visible = false
+position = Vector2(3840, 0)
+
+[node name="StaticBody2D" type="StaticBody2D" parent="GameZone/OffScreen Walls"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GameZone/OffScreen Walls/StaticBody2D"]
+position = Vector2(585, -15)
+shape = SubResource("RectangleShape2D_r3o0q")
+
+[node name="StaticBody2D2" type="StaticBody2D" parent="GameZone/OffScreen Walls"]
+position = Vector2(0, 678)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GameZone/OffScreen Walls/StaticBody2D2"]
+position = Vector2(585, -15)
+shape = SubResource("RectangleShape2D_r3o0q")
+
+[node name="StaticBody2D3" type="StaticBody2D" parent="GameZone/OffScreen Walls"]
+position = Vector2(-30, -30)
+rotation = 1.57079
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GameZone/OffScreen Walls/StaticBody2D3"]
+position = Vector2(585, -15)
+shape = SubResource("RectangleShape2D_r3o0q")
+
+[node name="StaticBody2D4" type="StaticBody2D" parent="GameZone/OffScreen Walls"]
+position = Vector2(1153, -30)
+rotation = 1.57079
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GameZone/OffScreen Walls/StaticBody2D4"]
+position = Vector2(585, -15)
+shape = SubResource("RectangleShape2D_r3o0q")
 
 [node name="Spawnpoints" type="Node2D" parent="GameZone"]
 position = Vector2(3840, 0)
@@ -59,17 +96,56 @@ gizmo_extents = 50.0
 offset = Vector2(3840, 0)
 anchor_mode = 0
 
-[node name="red" type="Area2D" parent="GameZone"]
-position = Vector2(4230, 510)
+[node name="red basket" type="Area2D" parent="GameZone"]
+position = Vector2(3840, 0)
+metadata/team = "red"
+metadata/type = "basket"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="GameZone/red"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GameZone/red basket"]
 shape = SubResource("CircleShape2D_01alp")
 
-[node name="blue" type="Area2D" parent="GameZone"]
-position = Vector2(4500, 330)
+[node name="blue basket" type="Area2D" parent="GameZone"]
+position = Vector2(4980, 630)
+metadata/team = "blue"
+metadata/type = "basket"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="GameZone/blue"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GameZone/blue basket"]
 shape = SubResource("CircleShape2D_01alp")
+
+[node name="Sample" parent="GameZone" instance=ExtResource("2_r3o0q")]
+position = Vector2(4260, 420)
+
+[node name="Sample2" parent="GameZone" instance=ExtResource("2_r3o0q")]
+position = Vector2(4320, 330)
+
+[node name="Sample3" parent="GameZone" instance=ExtResource("2_r3o0q")]
+position = Vector2(4380, 420)
+
+[node name="Sample4" parent="GameZone" instance=ExtResource("2_r3o0q")]
+position = Vector2(4440, 300)
+
+[node name="Sample5" parent="GameZone" instance=ExtResource("2_r3o0q")]
+position = Vector2(4230, 360)
+
+[node name="Sample6" parent="GameZone" instance=ExtResource("2_r3o0q")]
+position = Vector2(4290, 270)
+
+[node name="red ozone" type="Area2D" parent="GameZone"]
+position = Vector2(3840, 678)
+metadata/team = "red"
+metadata/type = "ozone"
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="GameZone/red ozone"]
+polygon = PackedVector2Array(0, -30, 150, -30, 150, -150, 0, -288)
+
+[node name="blue ozone" type="Area2D" parent="GameZone"]
+position = Vector2(4992, -29)
+rotation = 3.14159
+metadata/team = "red"
+metadata/type = "ozone"
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="GameZone/blue ozone"]
+polygon = PackedVector2Array(0, -30, 150, -30, 150, -150, 0, -288)
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
 _spawnable_scenes = PackedStringArray("uid://j5bbvw08b7hk")
@@ -353,14 +429,16 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Label" type="Label" parent="."]
-offset_left = 3840.0
-offset_right = 4080.0
+offset_left = 4260.0
+offset_right = 4500.0
 offset_bottom = 150.0
 text = "asadfghjghgsefadwsfgh"
 horizontal_alignment = 1
 
-[connection signal="body_entered" from="GameZone/red" to="GameUI" method="_on_red_body_entered"]
-[connection signal="body_entered" from="GameZone/blue" to="GameUI" method="_on_blue_body_entered"]
+[connection signal="area_entered" from="GameZone/red basket" to="GameUI" method="_on_red_area_entered"]
+[connection signal="body_entered" from="GameZone/red basket" to="GameUI" method="_on_red_body_entered"]
+[connection signal="area_entered" from="GameZone/blue basket" to="GameUI" method="_on_blue_area_entered"]
+[connection signal="body_entered" from="GameZone/blue basket" to="GameUI" method="_on_blue_body_entered"]
 [connection signal="pressed" from="MenuUI/Multiplayer/Host" to="." method="_on_host_pressed"]
 [connection signal="pressed" from="MenuUI/Multiplayer/Join" to="." method="_on_join_pressed"]
 [connection signal="toggled" from="LobbyUI/Control/RedTeam" to="LobbyUI" method="_on_red_team_toggled"]

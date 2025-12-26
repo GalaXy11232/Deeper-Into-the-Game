@@ -1,0 +1,37 @@
+[gd_scene load_steps=4 format=3 uid="uid://bd88npwa4e5s2"]
+
+[ext_resource type="Script" uid="uid://cllypsmhvs1sw" path="res://Component Nodes/inventory_node.gd" id="1_2w3qa"]
+[ext_resource type="Texture2D" uid="uid://5e88kkk2x14y" path="res://icon.svg" id="2_g64p3"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_55fw7"]
+font_size = 32
+
+[node name="InventoryNode" type="Node2D"]
+script = ExtResource("1_2w3qa")
+
+[node name="VFX" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_right = 120.0
+offset_bottom = 60.0
+
+[node name="SampleIcon" type="TextureRect" parent="VFX"]
+layout_mode = 0
+offset_top = 41.0
+offset_right = 60.0
+offset_bottom = 71.0
+rotation = -0.785397
+texture = ExtResource("2_g64p3")
+expand_mode = 1
+
+[node name="ItemNumber" type="Label" parent="VFX"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 60.0
+offset_right = 150.0
+offset_bottom = 60.0
+text = "0 / 5"
+label_settings = SubResource("LabelSettings_55fw7")
+horizontal_alignment = 1
+vertical_alignment = 1
